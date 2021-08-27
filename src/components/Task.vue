@@ -1,7 +1,7 @@
 <template>
   <div
     :class="['task', task.reminder ? 'reminder' : '']"
-    @dblclick="$emit('task-reminder-toggle')"
+    @dblclick="onToggleReminder"
   >
     <h3>
       {{ task.text }}
@@ -12,6 +12,7 @@
 </template>
 
 <script lang="ts">
+import { ActionTypes } from "@/store/modules/tasks/actions.types";
 import { Vue } from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 
@@ -19,9 +20,13 @@ export default class Task extends Vue {
   @Prop()
   task: any;
 
+  onToggleReminder(): void {
+    this.$store.dispatch(ActionTypes.TOGGLE_TASK_REMINDER, this.task);
+  }
+
   onDelete(): void {
     if (confirm("Are you sure?")) {
-      this.$emit("task-delete");
+      this.$store.dispatch(ActionTypes.DELETE_TASK, this.task);
     }
   }
 }
