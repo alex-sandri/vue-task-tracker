@@ -9,6 +9,7 @@
 </template>
 
 <script lang="ts">
+import { mapGetters, mapActions } from "vuex";
 import { Options, Vue } from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 
@@ -26,17 +27,6 @@ export default class Home extends Vue {
   showAddTask!: boolean;
 
   tasks: any[] = [];
-
-  async created(): Promise<void> {
-    this.tasks = await this.fetchTasks();
-  }
-
-  async fetchTasks(): Promise<any[]> {
-    const response = await fetch("api/tasks");
-    const tasks = await response.json();
-
-    return tasks;
-  }
 
   async onTaskAdd(task: any): Promise<void> {
     const response = await fetch("api/tasks", {
