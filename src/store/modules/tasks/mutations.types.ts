@@ -1,3 +1,6 @@
 export enum MutationTypes {
   SET_TASKS = "SET_TASKS",
+  ADD_TASK = "ADD_TASK",
+  TOGGLE_TASK_REMINDER = "TOGGLE_TASK_REMINDER",
+  DELETE_TASK = "DELETE_TASK",
 }
