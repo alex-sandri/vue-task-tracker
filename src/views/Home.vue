@@ -1,87 +1,39 @@
 <template>
   <AddTask v-if="showAddTask" @task-add="onTaskAdd"></AddTask>
-  <Tasks
-    :tasks="tasks"
-    @task-reminder-toggle="onTaskReminderToggle"
-    @task-delete="onTaskDelete"
-  >
-  </Tasks>
+  <Tasks :tasks="tasks"> </Tasks>
 </template>
 
 <script lang="ts">
+import { mapActions, Store, useStore } from "vuex";
 import { Options, Vue } from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 
 import AddTask from "../components/AddTask.vue";
 import Tasks from "../components/Tasks.vue";
+import { ActionTypes as TaskActionTypes } from "@/store/modules/tasks/actions.types";
+import { RootState } from "@/store";
 
 @Options({
   components: {
     AddTask,
     Tasks,
   },
+  setup() {
+    (this as any).store = useStore();
+  },
 })
 export default class Home extends Vue {
   @Prop()
   showAddTask!: boolean;
 
-  tasks: any[] = [];
+  store!: Store<RootState>;
 
-  async created(): Promise<void> {
-    this.tasks = await this.fetchTasks();
-  }
+  tasks = this.store.state.tasks;
 
-  async fetchTasks(): Promise<any[]> {
-    const response = await fetch("api/tasks");
-    const tasks = await response.json();
+  fetchTasks = mapActions([TaskActionTypes.FETCH_TASKS]).FETCH_TASKS;
 
-    return tasks;
-  }
-
-  async onTaskAdd(task: any): Promise<void> {
-    const response = await fetch("api/tasks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-
-    this.tasks = [...this.tasks, await response.json()];
-  }
-
-  async onTaskReminderToggle(taskToToggle: any): Promise<void> {
-    const response = await fetch(`api/tasks/${taskToToggle.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        reminder: !taskToToggle.reminder,
-      }),
-    });
-
-    if (!response.ok) {
-      return alert("Error updating task");
-    }
-
-    this.tasks = this.tasks.map((task) => {
-      if (task.id === taskToToggle.id) {
-        task.reminder = !task.reminder;
-      }
-
-      return task;
-    });
-  }
-
-  async onTaskDelete(id: number): Promise<void> {
-    const response = await fetch(`api/tasks/${id}`, { method: "DELETE" });
-
-    if (!response.ok) {
-      return alert("Error deleting task");
-    }
-
-    this.tasks = this.tasks.filter((task) => task.id !== id);
+  created() {
+    this.fetchTasks();
   }
 }
 </script>

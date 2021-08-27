@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts">
+import { ActionTypes } from "@/store/modules/tasks/actions.types";
 import { Vue } from "vue-class-component";
 
 export default class AddTask extends Vue {
@@ -43,7 +44,7 @@ export default class AddTask extends Vue {
       reminder: this.reminder,
     };
 
-    this.$emit("task-add", task);
+    this.$store.dispatch(ActionTypes.ADD_TASK, task);
 
     this.text = this.day = "";
     this.reminder = false;
