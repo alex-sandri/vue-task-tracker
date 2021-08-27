@@ -15,6 +15,7 @@ import { Prop } from "vue-property-decorator";
 
 import AddTask from "../components/AddTask.vue";
 import Tasks from "../components/Tasks.vue";
+import { ActionTypes as TaskActionTypes } from "@/store/modules/tasks/actions.types";
 
 @Options({
   components: {
@@ -26,7 +27,13 @@ export default class Home extends Vue {
   @Prop()
   showAddTask!: boolean;
 
-  tasks: any[] = [];
+  tasks = this.$store.state.tasks;
+
+  fetchTasks = mapActions([TaskActionTypes.FETCH_TASKS]).FETCH_TASKS;
+
+  created() {
+    (this as any).fetchTasks();
+  }
 
   async onTaskAdd(task: any): Promise<void> {
     const response = await fetch("api/tasks", {
